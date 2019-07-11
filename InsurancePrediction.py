@@ -6,37 +6,22 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 
-dataset = pd.read_csv('D://PYTHON/DATASETS/insurance.csv')
-
-# Plotting to analyse average age
-plot.figure(figsize=(15,10))
-plot.tight_layout()
-seaborn.distplot(dataset['age'])
-plot.show()
-
-# Getting categorical data
-cat_df = dataset.select_dtypes('object').copy()
+dataset = pd.read_csv('D://Rajesh/ML/Dataset/insurance.csv')
 
 # Plotting to analyse region-wise data
 plot.figure(figsize=(15,10))
 plot.tight_layout()
-region_count = cat_df['region'].value_counts()
+region_count = dataset['region'].value_counts()
 seaborn.barplot(region_count.index, region_count.values, alpha=0.9)
 plot.show()
 
 # Using One-Hot Encoding to tackle categorical data
-dummy_df = pd.get_dummies(cat_df)
+dummy_cat_df = pd.get_dummies(dataset, columns=['sex', 'smoker', 'region'], drop_first=True)
+#print(dummy_cat_df.columns.values)
 
-# Concatenating both original and dummy data
-final_df = pd.concat([dataset, dummy_df], axis=1)
-
-# Dropping columns with categorical value
-final_df = final_df.drop(['sex', 'smoker', 'region'], axis=1)
-
-# X contains Independent variable and y contains dependent variable
-X = final_df[['age', 'sex_male', 'sex_female', 'bmi', 'children', 'smoker_yes', 'smoker_no', 'region_northeast',
-              'region_northwest', 'region_southeast', 'region_southwest']].values
-y = final_df['expenses'].values
+# X contains independent variable and y contains dependent variable.
+X = dummy_cat_df.drop('expenses', axis=1).values
+y = dummy_cat_df['expenses'].values
 
 # Splitting data to 80% as training and 20% as test data
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
@@ -49,7 +34,7 @@ regressor.fit(X_train, y_train)
 print('Intercept is : ', regressor.intercept_)
 
 # Getting column names to use while printing co-efficient
-column_names = final_df.columns.values[:-1]
+column_names = dummy_cat_df.drop('expenses', axis=1).columns.values
 
 # Printing Coefficient
 coef_df = pd.DataFrame(regressor.coef_, column_names, columns=['Coefficient'])
@@ -65,7 +50,7 @@ print(df.head(25))
 # Getting top 25 values of Actual vs Predicted data and plotting it
 df1 = df.head(25)
 df1.plot(kind='bar', figsize=(15, 10))
-plot.title('Actual vs Predicted')
+plot.title('Actual vs Predicted Value of Expense')
 plot.grid(which='major', linestyle='-', linewidth='0.2', color='green')
 plot.show()
 
