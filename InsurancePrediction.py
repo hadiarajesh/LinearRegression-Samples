@@ -15,7 +15,7 @@ region_count = dataset['region'].value_counts()
 seaborn.barplot(region_count.index, region_count.values, alpha=0.9)
 plot.show()
 
-# Using One-Hot Encoding to tackle categorical data
+# Using One-Hot Encoding to handle categorical data
 dummy_cat_df = pd.get_dummies(dataset, columns=['sex', 'smoker', 'region'], drop_first=True)
 #print(dummy_cat_df.columns.values)
 
